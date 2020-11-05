@@ -11,6 +11,15 @@ use \App\Models\ChainModel;
 use \App\Models\CurrencyModel;
 use \App\Models\FacilityModel;
 use \App\Models\FacilityGroupModel;
+use \App\Models\FacilityTypologyModel;
+use \App\Models\IssueModel;
+use \App\Models\LanguageModel;
+use \App\Models\PromotionModel;
+use \App\Models\RoomModel;
+use \App\Models\SegmentModel;
+use \App\Models\TerminalModel;
+use \App\Models\ImageTypeModel;
+use \App\Models\GroupCategoryModel;
 
 class Hotelbeds extends BaseController
 {
@@ -25,6 +34,15 @@ class Hotelbeds extends BaseController
         $this->currencyModel = new CurrencyModel();
         $this->facilityModel = new FacilityModel();
         $this->facilityGroupModel = new FacilityGroupModel();
+        $this->facilityTypologyModel = new FacilityTypologyModel();
+        $this->issueModel = new IssueModel();
+        $this->languageModel = new LanguageModel();
+        $this->promotionModel = new PromotionModel();
+        $this->roomModel = new RoomModel();
+        $this->segmentModel = new SegmentModel();
+        $this->terminalModel = new TerminalModel();
+        $this->imageTypeModel = new ImageTypeModel();
+        $this->groupCategoryModel = new GroupCategoryModel();
 
         $this->hash = hash('sha256', '90db028cc44d811176332c7a14c6f08c' . 'cdf6bd90e0' . time());
         $this->base_uri = 'https://api.test.hotelbeds.com';
@@ -136,6 +154,7 @@ class Hotelbeds extends BaseController
         }
         // $this->boardModel->insertBatch($data);
         print_r(json_encode($data));
+        echo "<br>";
         die('Success!');
     }
 
@@ -234,8 +253,216 @@ class Hotelbeds extends BaseController
                 'description' => $facilityGroup->description->content ?? 'null',
             ];
         }
-        $this->facilityGroupModel->insertBatch($data);
+        // $this->facilityGroupModel->insertBatch($data);
         print_r(json_encode($data));
+        echo "<br>";
+        die('Success!');
+    }
+
+    public function getFacilityTypologies()
+    {
+        $client = \Config\Services::curlrequest($this->options);
+        $response = $client->request('GET', '/hotel-content-api/1.0/types/facilitytypologies?fields=all&language=ENG&from=1&to=100');
+
+        $facilityTypologies = (array) json_decode($response->getBody())->facilityTypologies;
+
+        foreach ($facilityTypologies as $typology) {
+            $data[] = [
+                'code' => $typology->code,
+                'number_flag' => $typology->numberFlag,
+                'logic_flag' => $typology->logicFlag,
+                'fee_flag' => $typology->feeFlag,
+                'distance_flag' => $typology->distanceFlag,
+                'age_from_flag' => $typology->ageFromFlag,
+                'age_to_flag' => $typology->ageToFlag,
+                'date_from_flag' => $typology->dateFromFlag,
+                'date_to_flag' => $typology->dateToFlag,
+                'time_from_flag' => $typology->timeFromFlag,
+                'time_to_flag' => $typology->timeToFlag,
+                'ind_yes_or_no_flag' => $typology->indYesOrNoFlag,
+                'amount_flag' => $typology->amountFlag,
+                'currency_flag' => $typology->currencyFlag,
+                'app_type_flag' => $typology->appTypeFlag,
+                'text_flag' => $typology->textFlag
+            ];
+        }
+        // $this->facilityTypologyModel->insertBatch($data);
+        print_r(json_encode($data));
+        echo "<br>";
+        die('Success!');
+    }
+
+    public function getIssues()
+    {
+        $client = \Config\Services::curlrequest($this->options);
+        $response = $client->request('GET', '/hotel-content-api/1.0/types/issues?fields=all&language=ENG&from=1&to=100');
+
+        $issues = (array) json_decode($response->getBody())->issues;
+
+        foreach ($issues as $issue) {
+            $data[] = [
+                'code' => $issue->code,
+                'type' => $issue->type,
+                'description' => $issue->description->content ?? 'null',
+                'name' => $issue->name->content ?? 'null',
+                'alternative' => $issue->alternative
+            ];
+        }
+        $this->issueModel->insertBatch($data);
+        // print_r(json_encode($data));
+        echo "<br>";
+        die('Success!');
+    }
+
+    public function getLanguages()
+    {
+        $client = \Config\Services::curlrequest($this->options);
+        $response = $client->request('GET', '/hotel-content-api/1.0/types/languages?fields=all&language=ENG&from=1&to=100');
+
+        $languages = (array) json_decode($response->getBody())->languages;
+
+        foreach ($languages as $language) {
+            $data[] = [
+                'code' => $language->code,
+                'name' => $language->name ?? 'null',
+                'description' => $language->description->content
+            ];
+        }
+        // $this->languageModel->insertBatch($data);
+        print_r(json_encode($data));
+        echo "<br>";
+        die('Success!');
+    }
+
+    public function getPromotions()
+    {
+        $client = \Config\Services::curlrequest($this->options);
+        $response = $client->request('GET', '/hotel-content-api/1.0/types/promotions?fields=all&language=ENG&from=1&to=200');
+
+        $promotions = (array) json_decode($response->getBody())->promotions;
+
+        foreach ($promotions as $promotion) {
+            $data[] = [
+                'code' => $promotion->code,
+                'name' => $promotion->name->content ?? 'null',
+                'description' => $promotion->description->content ?? 'null'
+            ];
+        }
+        // $this->promotionModel->insertBatch($data);
+        print_r(json_encode($data));
+        echo "<br>";
+        die('Success!');
+    }
+
+    public function getRooms()
+    {
+        $client = \Config\Services::curlrequest($this->options);
+        for ($for = 1, $to = 1000, $for <= 9900; $to <= 9900;) {
+            $response = $client->request('GET', '/hotel-content-api/1.0/types/rooms?fields=all&language=ENG&from=' . $for . '&to=' . $to . '');
+            $rooms = (array) json_decode($response->getBody())->rooms;
+
+            foreach ($rooms as $room) {
+                $data[] = [
+                    'code' => $room->code,
+                    'type' => $room->type,
+                    'characteristic' => $room->characteristic,
+                    'min_pax' => $room->minPax,
+                    'max_pax' => $room->maxPax,
+                    'max_adults' => $room->maxAdults,
+                    'max_children' => $room->maxChildren,
+                    'min_adults' => $room->minAdults,
+                    'description' => $room->description ?? 'null',
+                    'type_description' => $room->typeDescription->content,
+                    'characteristic_description' => $room->characteristicDescription->content ?? 'null',
+                ];
+            }
+        }
+        // $this->roomModel->insertBatch($data);
+        // print_r(json_encode($data));
+        echo "<br>";
+        die('Success!');
+    }
+
+    public function getSegments()
+    {
+        $client = \Config\Services::curlrequest($this->options);
+        $response = $client->request('GET', '/hotel-content-api/1.0/types/segments?fields=all&language=ENG&from=1&to=100');
+
+        $segments = (array) json_decode($response->getBody())->segments;
+
+        foreach ($segments as $segments) {
+            $data[] = [
+                'code' => $segments->code,
+                'description' => $segments->description->content
+            ];
+        }
+        $this->segmentModel->insertBatch($data);
+        print_r(json_encode($data));
+        echo "<br>";
+        die('Success!');
+    }
+
+    public function getTerminals()
+    {
+        $client = \Config\Services::curlrequest($this->options);
+        for ($for = 1, $to = 1000, $for <= 2000; $to <= 2000;) {
+            $response = $client->request('GET', '/hotel-content-api/1.0/types/terminals?fields=all&language=ENG&from=' . $for . '&to=' . $to . '');
+
+            $terminals = (array) json_decode($response->getBody())->terminals;
+
+            foreach ($terminals as $terminal) {
+                $data[] = [
+                    'code' => $terminal->code,
+                    'type' => $terminal->type,
+                    'country' => $terminal->country,
+                    'name' => $terminal->name->content,
+                    'description' => $terminal->description->content,
+                ];
+            }
+            $for = $for + 1000;
+            $to = $to + 1000;
+        }
+        // $this->terminalModel->insertBatch($data);
+        // print_r(json_encode($data));
+        die('Success!');
+    }
+
+    public function getImageTypes()
+    {
+        $client = \Config\Services::curlrequest($this->options);
+        $response = $client->request('GET', '/hotel-content-api/1.0/types/imagetypes?fields=all&language=ENG&from=1&to=100');
+
+        $imageTypes = (array) json_decode($response->getBody())->imageTypes;
+
+        foreach ($imageTypes as $type) {
+            $data[] = [
+                'code' => $type->code,
+                'description' => $type->description->content
+            ];
+        }
+        // $this->imageTypeModel->insertBatch($data);
+        print_r(json_encode($data));
+        echo "<br>";
+        die('Success!');
+    }
+
+    public function getGroupCategories()
+    {
+        $client = \Config\Services::curlrequest($this->options);
+        $response = $client->request('GET', '/hotel-content-api/1.0/types/groupcategories?fields=all&language=ENG&from=1&to=100');
+
+        $groupCategories = (array) json_decode($response->getBody())->groupCategories;
+
+        foreach ($groupCategories as $groupCategory) {
+            $data[] = [
+                'code' => $groupCategory->code,
+                'order' => $groupCategory->order,
+                'description' => $groupCategory->description->content
+            ];
+        }
+        // $this->groupCategoryModel->insertBatch($data);
+        print_r(json_encode($data));
+        echo "<br>";
         die('Success!');
     }
 }
