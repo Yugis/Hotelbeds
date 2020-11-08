@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class BoardModel extends Model
 {
     protected $table      = 'boards';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'code';
 
     protected $returnType     = 'object';
 

@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class AccommodationModel extends Model
 {
     protected $table      = 'accommodations';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'code';
 
     protected $returnType     = 'object';
 

@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class GroupCategoryModel extends Model
 {
     protected $table      = 'group_categories';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'code';
 
     protected $returnType     = 'object';
 

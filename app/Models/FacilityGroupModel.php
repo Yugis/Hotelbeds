@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class FacilityGroupModel extends Model
 {
     protected $table      = 'facility_groups';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'code';
 
     protected $returnType     = 'object';
 

@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class ImageTypeModel extends Model
 {
     protected $table      = 'image_types';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'code';
 
     protected $returnType     = 'object';
 

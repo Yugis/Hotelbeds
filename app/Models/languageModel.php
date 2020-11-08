@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class LanguageModel extends Model
 {
     protected $table      = 'languages';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'code';
 
     protected $returnType     = 'object';
 

@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class ChainModel extends Model
 {
     protected $table      = 'chains';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'code';
 
     protected $returnType     = 'object';
 

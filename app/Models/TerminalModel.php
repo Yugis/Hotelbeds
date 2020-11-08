@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class TerminalModel extends Model
 {
     protected $table      = 'terminals';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'code';
 
     protected $returnType     = 'object';
 

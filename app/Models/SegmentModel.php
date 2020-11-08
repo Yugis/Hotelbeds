@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class SegmentModel extends Model
 {
     protected $table      = 'segments';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'code';
 
     protected $returnType     = 'object';
 

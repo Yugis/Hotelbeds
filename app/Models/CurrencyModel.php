@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class CurrencyMOdel extends Model
 {
     protected $table      = 'currencies';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'code';
 
     protected $returnType     = 'object';
 

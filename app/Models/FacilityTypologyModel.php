@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class FacilityTypologyModel extends Model
 {
     protected $table      = 'facility_typologies';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'code';
 
     protected $returnType     = 'object';
 
