@@ -2,48 +2,31 @@
 
 namespace App\Controllers;
 
-use \App\Models\StateModel;
-use \App\Models\DestinationModel;
-use \App\Models\AccommodationModel;
-use \App\Models\BoardModel;
-use \App\Models\CategoryModel;
-use \App\Models\ChainModel;
-use \App\Models\CurrencyModel;
-use \App\Models\FacilityModel;
-use \App\Models\FacilityGroupModel;
-use \App\Models\FacilityTypologyModel;
-use \App\Models\IssueModel;
-use \App\Models\LanguageModel;
-use \App\Models\PromotionModel;
-use \App\Models\RoomModel;
-use \App\Models\SegmentModel;
-use \App\Models\TerminalModel;
-use \App\Models\ImageTypeModel;
-use \App\Models\GroupCategoryModel;
+use \App\Models\{
+    StateModel,
+    DestinationModel,
+    AccommodationModel,
+    BoardModel,
+    CategoryModel,
+    ChainModel,
+    CurrencyModel,
+    FacilityModel,
+    FacilityGroupModel,
+    FacilityTypologyModel,
+    IssueModel,
+    LanguageModel,
+    PromotionModel,
+    RoomModel,
+    SegmentModel,
+    TerminalModel,
+    ImageTypeModel,
+    GroupCategoryModel
+};
 
 class Hotelbeds extends BaseController
 {
     public function __construct()
     {
-        $this->stateModel = new StateModel();
-        $this->destinationModel = new DestinationModel();
-        $this->accommodationModel = new AccommodationModel();
-        $this->boardModel = new BoardModel();
-        $this->categoryModel = new CategoryModel();
-        $this->chainModel = new ChainModel();
-        $this->currencyModel = new CurrencyModel();
-        $this->facilityModel = new FacilityModel();
-        $this->facilityGroupModel = new FacilityGroupModel();
-        $this->facilityTypologyModel = new FacilityTypologyModel();
-        $this->issueModel = new IssueModel();
-        $this->languageModel = new LanguageModel();
-        $this->promotionModel = new PromotionModel();
-        $this->roomModel = new RoomModel();
-        $this->segmentModel = new SegmentModel();
-        $this->terminalModel = new TerminalModel();
-        $this->imageTypeModel = new ImageTypeModel();
-        $this->groupCategoryModel = new GroupCategoryModel();
-
         $this->hash = hash('sha256', '90db028cc44d811176332c7a14c6f08c' . 'cdf6bd90e0' . time());
         $this->base_uri = 'https://api.test.hotelbeds.com';
         $this->headers = [
@@ -56,13 +39,12 @@ class Hotelbeds extends BaseController
             'headers' => $this->headers,
             'http_errors' => false
         ];
+        $this->client = \Config\Services::curlrequest($this->options);
     }
 
     public function status()
     {
-        $client = \Config\Services::curlrequest($this->options);
-
-        $response = $client->request('GET', '/hotel-api/1.0/status');
+        $response = $this->client->request('GET', '/hotel-api/1.0/status');
 
         echo $response->getStatusCode();
         echo "\n";
@@ -71,8 +53,7 @@ class Hotelbeds extends BaseController
 
     public function getStates()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/locations/countries?fields=all&language=ENG&from=1&to=207');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/locations/countries?fields=all&language=ENG&from=1&to=207');
 
         $countries = (array) json_decode($response->getBody())->countries;
 
@@ -87,16 +68,16 @@ class Hotelbeds extends BaseController
                 ];
             }
         }
-        // $this->stateModel->insertBatch($data);
+        $stateModel = new StateModel();
+        // $stateModel->insertBatch($data);
         print_r(json_encode($data));
         die('Success!');
     }
 
     public function getDestinations()
     {
-        $client = \Config\Services::curlrequest($this->options);
         for ($for = 1, $to = 1000, $for <= 6000; $to <= 6000;) {
-            $response = $client->request('GET', '/hotel-content-api/1.0/locations/destinations?fields=all&language=ENG&from=' . $for . '&to=' . $to . '');
+            $response = $this->client->request('GET', '/hotel-content-api/1.0/locations/destinations?fields=all&language=ENG&from=' . $for . '&to=' . $to . '');
 
             $destinations = (array) json_decode($response->getBody())->destinations;
 
@@ -116,15 +97,15 @@ class Hotelbeds extends BaseController
             $for = $for + 1000;
             $to = $to + 1000;
         }
-        // $this->destinationModel->insertBatch($data);
+        $destinationModel = new DestinationModel();
+        // $destinationModel->insertBatch($data);
         print_r(json_encode($data));
         die('Success!');
     }
 
     public function getAccomodations()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/accommodations?fields=all&language=ENG&from=1&to=100');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/accommodations?fields=all&language=ENG&from=1&to=100');
 
         $accommodations = (array) json_decode($response->getBody())->accommodations;
 
@@ -134,15 +115,15 @@ class Hotelbeds extends BaseController
                 'description' => $accommodation->typeMultiDescription->content,
             ];
         }
-        // $this->accommodationModel->insertBatch($data);
+        $accommodationModel = new AccommodationModel();
+        // $accommodationModel->insertBatch($data);
         print_r(json_encode($data));
         die('Success!');
     }
 
     public function getBoards()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/boards?fields=all&language=ENG&from=1&to=100');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/boards?fields=all&language=ENG&from=1&to=100');
 
         $boards = (array) json_decode($response->getBody())->boards;
 
@@ -152,7 +133,8 @@ class Hotelbeds extends BaseController
                 'description' => $board->description->content,
             ];
         }
-        // $this->boardModel->insertBatch($data);
+        $boardModel = new BoardModel();
+        // $boardModel->insertBatch($data);
         print_r(json_encode($data));
         echo "<br>";
         die('Success!');
@@ -160,8 +142,7 @@ class Hotelbeds extends BaseController
 
     public function getCategories()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/categories?fields=all&language=ENG&from=1&to=100');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/categories?fields=all&language=ENG&from=1&to=100');
 
         $categories = (array) json_decode($response->getBody())->categories;
 
@@ -174,16 +155,16 @@ class Hotelbeds extends BaseController
                 'description' => $category->description->content,
             ];
         }
-        // $this->categoryModel->insertBatch($data);
+        $categoryModel = new CategoryModel();
+        // $categoryModel->insertBatch($data);
         print_r(json_encode($data));
         die('Success!');
     }
 
     public function getChains()
     {
-        $client = \Config\Services::curlrequest($this->options);
         for ($for = 1, $to = 1000, $for <= 3000; $to <= 3000;) {
-            $response = $client->request('GET', '/hotel-content-api/1.0/types/chains?fields=all&language=ENG&from=' . $for . '&to=' . $to . '');
+            $response = $this->client->request('GET', '/hotel-content-api/1.0/types/chains?fields=all&language=ENG&from=' . $for . '&to=' . $to . '');
 
             $chains = (array) json_decode($response->getBody())->chains;
 
@@ -196,15 +177,15 @@ class Hotelbeds extends BaseController
             $for = $for + 1000;
             $to = $to + 1000;
         }
-        // $this->chainModel->insertBatch($data);
+        $chainModel = new ChainModel();
+        // $chainModel->insertBatch($data);
         print_r(json_encode($data));
         die('Success!');
     }
 
     public function getCurrencies()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/currencies?fields=all&language=ENG&from=1&to=200');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/currencies?fields=all&language=ENG&from=1&to=200');
 
         $currencies = (array) json_decode($response->getBody())->currencies;
 
@@ -215,15 +196,15 @@ class Hotelbeds extends BaseController
                 'type' => $currency->currencyType,
             ];
         }
-        // $this->currencyModel->insertBatch($data);
+        $currencyModel = new CurrencyModel();
+        // $currencyModel->insertBatch($data);
         print_r(json_encode($data));
         die('Success!');
     }
 
     public function getFacilities()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/facilities?fields=all&language=ENG&from=1&to=600');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/facilities?fields=all&language=ENG&from=1&to=600');
 
         $facilities = (array) json_decode($response->getBody())->facilities;
 
@@ -235,15 +216,15 @@ class Hotelbeds extends BaseController
                 'description' => $facility->description->content ?? 'null',
             ];
         }
-        // $this->facilityModel->insertBatch($data);
+        $facilityModel = new FacilityModel();
+        // $facilityModel->insertBatch($data);
         print_r(json_encode($data));
         die('Success!');
     }
 
     public function getFacilityGroups()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/facilitygroups?fields=all&language=ENG&from=1&to=100');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/facilitygroups?fields=all&language=ENG&from=1&to=100');
 
         $facilityGroups = (array) json_decode($response->getBody())->facilityGroups;
 
@@ -253,7 +234,8 @@ class Hotelbeds extends BaseController
                 'description' => $facilityGroup->description->content ?? 'null',
             ];
         }
-        // $this->facilityGroupModel->insertBatch($data);
+        $facilityGroupModel = new FacilityGroupModel();
+        // $facilityGroupModel->insertBatch($data);
         print_r(json_encode($data));
         echo "<br>";
         die('Success!');
@@ -261,8 +243,7 @@ class Hotelbeds extends BaseController
 
     public function getFacilityTypologies()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/facilitytypologies?fields=all&language=ENG&from=1&to=100');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/facilitytypologies?fields=all&language=ENG&from=1&to=100');
 
         $facilityTypologies = (array) json_decode($response->getBody())->facilityTypologies;
 
@@ -286,7 +267,8 @@ class Hotelbeds extends BaseController
                 'text_flag' => $typology->textFlag
             ];
         }
-        // $this->facilityTypologyModel->insertBatch($data);
+        $facilityTypologyModel = new FacilityTypologyModel();
+        // $facilityTypologyModel->insertBatch($data);
         print_r(json_encode($data));
         echo "<br>";
         die('Success!');
@@ -294,8 +276,7 @@ class Hotelbeds extends BaseController
 
     public function getIssues()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/issues?fields=all&language=ENG&from=1&to=100');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/issues?fields=all&language=ENG&from=1&to=100');
 
         $issues = (array) json_decode($response->getBody())->issues;
 
@@ -308,7 +289,8 @@ class Hotelbeds extends BaseController
                 'alternative' => $issue->alternative
             ];
         }
-        $this->issueModel->insertBatch($data);
+        $issueModel = new IssueModel();
+        // $issueModel->insertBatch($data);
         // print_r(json_encode($data));
         echo "<br>";
         die('Success!');
@@ -316,8 +298,7 @@ class Hotelbeds extends BaseController
 
     public function getLanguages()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/languages?fields=all&language=ENG&from=1&to=100');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/languages?fields=all&language=ENG&from=1&to=100');
 
         $languages = (array) json_decode($response->getBody())->languages;
 
@@ -328,7 +309,8 @@ class Hotelbeds extends BaseController
                 'description' => $language->description->content
             ];
         }
-        // $this->languageModel->insertBatch($data);
+        $languageModel = new LanguageModel();
+        // $languageModel->insertBatch($data);
         print_r(json_encode($data));
         echo "<br>";
         die('Success!');
@@ -336,8 +318,7 @@ class Hotelbeds extends BaseController
 
     public function getPromotions()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/promotions?fields=all&language=ENG&from=1&to=200');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/promotions?fields=all&language=ENG&from=1&to=200');
 
         $promotions = (array) json_decode($response->getBody())->promotions;
 
@@ -348,7 +329,8 @@ class Hotelbeds extends BaseController
                 'description' => $promotion->description->content ?? 'null'
             ];
         }
-        // $this->promotionModel->insertBatch($data);
+        $promotionModel = new PromotionModel();
+        // $promotionModel->insertBatch($data);
         print_r(json_encode($data));
         echo "<br>";
         die('Success!');
@@ -356,9 +338,8 @@ class Hotelbeds extends BaseController
 
     public function getRooms()
     {
-        $client = \Config\Services::curlrequest($this->options);
         for ($for = 1, $to = 1000, $for <= 9900; $to <= 9900;) {
-            $response = $client->request('GET', '/hotel-content-api/1.0/types/rooms?fields=all&language=ENG&from=' . $for . '&to=' . $to . '');
+            $response = $this->client->request('GET', '/hotel-content-api/1.0/types/rooms?fields=all&language=ENG&from=' . $for . '&to=' . $to . '');
             $rooms = (array) json_decode($response->getBody())->rooms;
 
             foreach ($rooms as $room) {
@@ -377,7 +358,8 @@ class Hotelbeds extends BaseController
                 ];
             }
         }
-        // $this->roomModel->insertBatch($data);
+        $roomModel = new RoomModel();
+        // $roomModel->insertBatch($data);
         // print_r(json_encode($data));
         echo "<br>";
         die('Success!');
@@ -385,8 +367,7 @@ class Hotelbeds extends BaseController
 
     public function getSegments()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/segments?fields=all&language=ENG&from=1&to=100');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/segments?fields=all&language=ENG&from=1&to=100');
 
         $segments = (array) json_decode($response->getBody())->segments;
 
@@ -396,7 +377,8 @@ class Hotelbeds extends BaseController
                 'description' => $segments->description->content
             ];
         }
-        $this->segmentModel->insertBatch($data);
+        $segmentModel = new SegmentModel();
+        // $segmentModel->insertBatch($data);
         print_r(json_encode($data));
         echo "<br>";
         die('Success!');
@@ -404,9 +386,8 @@ class Hotelbeds extends BaseController
 
     public function getTerminals()
     {
-        $client = \Config\Services::curlrequest($this->options);
         for ($for = 1, $to = 1000, $for <= 2000; $to <= 2000;) {
-            $response = $client->request('GET', '/hotel-content-api/1.0/types/terminals?fields=all&language=ENG&from=' . $for . '&to=' . $to . '');
+            $response = $this->client->request('GET', '/hotel-content-api/1.0/types/terminals?fields=all&language=ENG&from=' . $for . '&to=' . $to . '');
 
             $terminals = (array) json_decode($response->getBody())->terminals;
 
@@ -422,15 +403,15 @@ class Hotelbeds extends BaseController
             $for = $for + 1000;
             $to = $to + 1000;
         }
-        // $this->terminalModel->insertBatch($data);
+        $terminalModel = new TerminalModel();
+        // $terminalModel->insertBatch($data);
         // print_r(json_encode($data));
         die('Success!');
     }
 
     public function getImageTypes()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/imagetypes?fields=all&language=ENG&from=1&to=100');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/imagetypes?fields=all&language=ENG&from=1&to=100');
 
         $imageTypes = (array) json_decode($response->getBody())->imageTypes;
 
@@ -440,7 +421,8 @@ class Hotelbeds extends BaseController
                 'description' => $type->description->content
             ];
         }
-        // $this->imageTypeModel->insertBatch($data);
+        $imageTypeModel = new ImageTypeModel();
+        // $imageTypeModel->insertBatch($data);
         print_r(json_encode($data));
         echo "<br>";
         die('Success!');
@@ -448,8 +430,7 @@ class Hotelbeds extends BaseController
 
     public function getGroupCategories()
     {
-        $client = \Config\Services::curlrequest($this->options);
-        $response = $client->request('GET', '/hotel-content-api/1.0/types/groupcategories?fields=all&language=ENG&from=1&to=100');
+        $response = $this->client->request('GET', '/hotel-content-api/1.0/types/groupcategories?fields=all&language=ENG&from=1&to=100');
 
         $groupCategories = (array) json_decode($response->getBody())->groupCategories;
 
@@ -460,7 +441,8 @@ class Hotelbeds extends BaseController
                 'description' => $groupCategory->description->content
             ];
         }
-        // $this->groupCategoryModel->insertBatch($data);
+        $groupCategoryModel = new GroupCategoryModel();
+        // $groupCategoryModel->insertBatch($data);
         print_r(json_encode($data));
         echo "<br>";
         die('Success!');
